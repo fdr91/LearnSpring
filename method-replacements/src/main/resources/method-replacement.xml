@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="
+                http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="harry"
+          class="com.springinaction.springidol.Magician">
+        <property name="magicBox" ref="magicBox" />
+        <property name="magicWords" value="Bippity boppity boo" />
+    </bean>
+    <bean id="magicBox"
+          class="com.springinaction.springidol.MagicBoxImpl" />
+
+    <!--Replacement of magicbox method-->
+    <bean id="magicBox2"
+          class="com.springinaction.springidol.MagicBoxImpl">
+        <replaced-method
+                name="getContents"
+                replacer="tigerReplacer" />
+    </bean>
+    <bean id="tigerReplacer"
+          class="com.springinaction.springidol.TigerReplacer" />
+    <bean id="harryReplaced"
+          class="com.springinaction.springidol.Magician">
+        <property name="magicBox" ref="magicBox2" />
+        <property name="magicWords" value="Bippity boppity boo" />
+    </bean>
+
+    <bean id="stevie"
+          class="com.springinaction.springidol.InstrumentalistWithInsertMethod">
+        <lookup-method name="getInstrument" bean="guitar" />
+        <property name="song" value="Greensleeves" />
+    </bean>
+    <bean id="guitar"
+          class="com.springinaction.springidol.Guitar" />
+</beans>

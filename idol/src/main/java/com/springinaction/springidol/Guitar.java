@@ -13,6 +13,6 @@ public class Guitar implements Instrument {
     public Guitar() {
     }
     public void play() {
-        LOGGER.info("DIN DIN DIN");
+        System.out.println("DIN DIN DIN");
     }
 }

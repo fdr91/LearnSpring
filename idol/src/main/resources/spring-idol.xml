@@ -2,23 +2,39 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="
                 http://www.springframework.org/schema/beans
                 http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
                 http://www.springframework.org/schema/context
-                http://www.springframework.org/schema/context/spring-context.xsd"
-               default-init-method="turnOnLights"
-               default-destroy-method="turnOffLights">
+                http://www.springframework.org/schema/context/spring-context.xsd
+                http://www.springframework.org/schema/aop
+                http://www.springframework.org/schema/aop/spring-aop-3.0.xsd"
+       default-init-method="turnOnLights"
+       default-destroy-method="turnOffLights">
     <bean id="duke"
           class="com.springinaction.springidol.Juggler">
         <constructor-arg value="15" />
     </bean>
+
+    <!--Basic bean declaration-->
     <bean id="sonnet29"
           class="com.springinaction.springidol.Sonnet29" />
+
+    <bean id="kenny"
+          class="com.springinaction.springidol.Instrumentalist">
+        <!--We can init propeties using <property name=... value=... notation for simple props-->
+        <property name="song" value="Jingle Bells"/>
+        <!--To use a bean as an property we inject it using <property name=... ref=...-->
+        <property name="instrument" ref="saxophone"/>
+    </bean>
+
+    <!--Injecting properties via constructor args-->
     <bean id="poeticDuke"
           class="com.springinaction.springidol.PoeticJuggler">
         <constructor-arg value="15" />
+        <!--Here we can see internal bean declaration-->
         <constructor-arg>
             <bean class="com.springinaction.springidol.Sonnet29" />
         </constructor-arg>
@@ -31,17 +47,16 @@
     <!--<context:component-scan base-package="com.springinaction.springidol"/>-->
     <bean id="auditorium"
           class="com.springinaction.springidol.Auditorium"/>
-          <!--init-method="turnOnLights"
-          destroy-method="turnOffLights"/>-->
-    <bean id="kenny"
-          class="com.springinaction.springidol.Instrumentalist">
-        <property name="song" value="Jingle Bells"/>
-        <property name="instrument" ref="saxophone"/>
-    </bean>
+
+
+    <!--p namespace could be used for brevity sake-->
+    <!--p:propname for simple properties and p:propname-ref to use beans-->
     <bean id="kenny2"
           class="com.springinaction.springidol.Instrumentalist"
-        p:song="Jingle Bells"
-        p:instrument-ref="saxophone"/>
+          p:song="Jingle Bells"
+          p:instrument-ref="saxophone"/>
+
+
     <bean id="saxophone"
           class="com.springinaction.springidol.Saxophone" />
     <bean id="piano"
@@ -53,9 +68,12 @@
     <bean id="harmonica"
           class="com.springinaction.springidol.Harmonica" />
 
+    <!--Collection property usage-->
     <bean id="hank"
           class="com.springinaction.springidol.OneManBand">
         <property name="instruments">
+            <!--here we use map as a property-->
+            <!--list,set,props are also possible-->
             <map>
                 <entry key="GUITAR" value-ref="guitar" />
                 <entry key="CYMBAL" value-ref="cymbal" />
@@ -63,5 +81,73 @@
             </map>
         </property>
     </bean>
+    <!--Properties interface usage-->
+    <bean id="hankProps"
+          class="com.springinaction.springidol.OneManBand">
+        <property name="instrumentsProp">
+            <props>
+                <prop key="GUITAR">STRUM STRUM STRUM</prop>
+                <prop key="CYMBAL">CRASH CRASH CRASH</prop>
+                <prop key="HARMONICA">HUM HUM HUM</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="hankNull"
+          class="com.springinaction.springidol.OneManBand">
+        <property name="instrumentsProp"><null/></property>
+        <property name="instruments"><null/></property>
+    </bean>
 
+    <!--Simple usage of spell. #{...} is a speel expression-->
+    <bean id="carl"
+          class="com.springinaction.springidol.Instrumentalist">
+        <property name="song" value="#{kenny.song}" />
+    </bean>
+
+    <!--Call method of bean in spell example -->
+    <!--Operator .? checks expression for null-value-->
+    <bean id="selectiveInstrumentalist"
+          class="com.springinaction.springidol.Instrumentalist"
+          p:song="#{songSelector.selectSong()?.toUpperCase()}"
+          p:instrument-ref="saxophone"
+    />
+    <bean id="songSelector" class="com.springinaction.springidol.SongSelector"/>
+
+    <!--Access to a static field Math.PI using spell operator T()-->
+    <bean id="multiplier" class="com.springinaction.springidol.Multiplier"
+          p:multiplier="#{T(java.lang.Math).PI}"/>
+
+    <!--Beans inheritance-->
+    <!--Definition of an abstract bean-->
+    <bean id="baseSaxophonist"  class="com.springinaction.springidol.Instrumentalist" abstract="true">
+        <property name="song" value="Jingle Bells"/>
+        <property name="instrument" ref="saxophone"/>
+    </bean>
+    <!--Ancestors of the abstract bean-->
+    <bean id="saxophonist1" parent="baseSaxophonist"/>
+    <bean id="saxophonist2" parent="baseSaxophonist"/>
+
+    <!--Bean without a class as parent-->
+    <!--In this case it is used only to hold common configuration of it's ascendants-->
+    <bean id="basePerformer" abstract="true"
+          p:song="Somewhere Over the Rainbow"/>
+    <!--Ascendants must have class property to be non-abstract-->
+    <bean id="taylor"
+          class="com.springinaction.springidol.Vocalist"
+          parent="basePerformer" />
+    <bean id="stevie"
+          class="com.springinaction.springidol.Instrumentalist"
+          parent="basePerformer">
+        <property name="instrument" ref="guitar" />
+    </bean>
+    <bean id="pianist"
+          class="com.springinaction.springidol.Instrumentalist"
+          abstract="true">
+        <property name="song" value="Chopsticks" />
+        <property name="instrument">
+            <bean class="com.springinaction.springidol.Piano" />
+        </property>
+    </bean>
+    <aop:spring-configured />
+    <aop:aspectj-autoproxy/>
 </beans>
