@@ -7,9 +7,11 @@
 	<artifactId>knights</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<modules>
-		<module>knights_main</module>
-        <module>idol</module>
-        <module>hibernate-learning</module>
+		<module>soundsystem</module>
+		<module>advancedwiring</module>
+		<module>conditional</module>
+		<module>soundsystem.concert</module>
+		<module>spittr</module>
     </modules>
 	<packaging>pom</packaging>
 
@@ -56,7 +58,7 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
-            <version>1.6.1</version>
+			<version>1.6.8</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -64,6 +66,12 @@
             <version>LATEST</version>
             <scope>provided</scope>
         </dependency>
+
+		<dependency>
+			<groupId>com.github.stefanbirkner</groupId>
+			<artifactId>system-rules</artifactId>
+			<version>1.16.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>
