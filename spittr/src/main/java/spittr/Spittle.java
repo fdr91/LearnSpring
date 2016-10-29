@@ -14,11 +14,11 @@ public class Spittle {
     private Double longitude;
 
     public Spittle(String message, Date time) {
-        this(message, time, null, null);
+        this(message, time, null, null, 0);
     }
 
     public Spittle(
-            String message, Date time, Double longitude, Double latitude) {
+            String message, Date time, Double longitude, Double latitude, long id) {
         this.id = null;
         this.message = message;
         this.time = time;
